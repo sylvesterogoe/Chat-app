@@ -19,8 +19,11 @@ const (
 	messageBufferSize = 256
 )
 
-var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize,
-	WriteBufferSize: socketBufferSize}
+var upgrader = &websocket.Upgrader{
+	ReadBufferSize: socketBufferSize,
+	WriteBufferSize: socketBufferSize,
+	Subprotocols: []string{"upgrade"},
+}
 
 func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
@@ -35,9 +38,11 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		room:   r,
 	}
 	r.join <- client
-	defer func() { r.leave <- client }()
-	go client.writeToClient()
-	client.readAndForwardToRoom()
+	defer func() {
+		r.leave <- client
+	}()
+	go client.write()
+	client.read()
 }
 
 func newRoom() *room {

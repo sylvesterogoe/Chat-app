@@ -41,7 +41,7 @@ func main() {
 
 	http.HandleFunc("/auth/", loginHandler)
 
-	http.Handle("/room", r)
+	//http.Handle("/room", r)
 
 	go r.run()
 

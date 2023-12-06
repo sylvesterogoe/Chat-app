@@ -10,7 +10,7 @@ type client struct {
 	room   *room
 }
 
-func (c *client) readAndForwardToRoom() {
+func (c *client) read() {
 	defer c.socket.Close()
 	for {
 		_, msg, err := c.socket.ReadMessage()
@@ -21,7 +21,7 @@ func (c *client) readAndForwardToRoom() {
 	}
 }
 
-func (c *client) writeToClient() {
+func (c *client) write() {
 	defer c.socket.Close()
 	for msg := range c.send {
 		err := c.socket.WriteMessage(websocket.TextMessage, msg)
